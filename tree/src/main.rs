@@ -1,3 +1,5 @@
+use core::cmp::Ordering::{Greater, Less};
+
 type TreeNode<T> = Option<Box<Node<T>>>;
 
 #[derive(Debug)]
@@ -17,24 +19,22 @@ impl<T: Ord> Node<T> {
     }
 
     fn add(self: &mut Self, value: Box<T>) {
-        let current = self.value.as_ref().unwrap();
-        if current.as_ref().cmp(value.as_ref()).is_eq() {
-            return;
-        }
-        if current.as_ref().cmp(value.as_ref()).is_gt() {
-            if self.left.is_some() {
-                self.left.as_mut().unwrap().add(value);
-                return;
+        let current = self.value.as_ref()
+            .unwrap();
+        match current.as_ref().cmp(value.as_ref()) {
+            Less { .. } => {
+                match self.right {
+                    Some { .. } => { self.right.as_mut().unwrap().add(value); }
+                    None {} => { self.right.replace(Box::new(Node::new(value))); }
+                }
             }
-            self.left.replace(Box::new(Node::new(value)));
-            return;
-        }
-        if current.as_ref().cmp(value.as_ref()).is_lt() {
-            if self.right.is_some() {
-                self.right.as_mut().unwrap().add(value);
-                return;
+            Greater { .. } => {
+                match self.left {
+                    Some { .. } => { self.left.as_mut().unwrap().add(value); }
+                    None {} => { self.left.replace(Box::new(Node::new(value))); }
+                }
             }
-            self.right.replace(Box::new(Node::new(value)));
+            _ => {}
         }
     }
 }
@@ -46,6 +46,7 @@ fn main() {
     tree.add(Box::new(36));
     tree.add(Box::new(15));
     tree.add(Box::new(45));
+    tree.add(Box::new(1));
 
     println!("{:?}", tree)
 }
