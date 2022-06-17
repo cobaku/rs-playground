@@ -1,6 +1,3 @@
-use std::borrow::Borrow;
-use std::ops::Deref;
-
 type TreeNode<T> = Option<Box<Node<T>>>;
 
 #[derive(Debug)]
@@ -22,7 +19,6 @@ impl<T: Ord> Node<T> {
     fn add(self: &mut Self, value: Box<T>) {
         let current = self.value.as_ref().unwrap();
         if current.as_ref().cmp(value.as_ref()).is_eq() {
-            self.value.replace(Box::new(*value));
             return;
         }
         if current.as_ref().cmp(value.as_ref()).is_gt() {
