@@ -1,15 +1,15 @@
 use core::cmp::Ordering::{Greater, Less};
+use std::fmt::Display;
 
 type TreeNode<T> = Option<Box<Node<T>>>;
 
-#[derive(Debug)]
-struct Node<T: Ord> {
+struct Node<T: Ord + Display> {
     value: Option<Box<T>>,
     left: TreeNode<T>,
     right: TreeNode<T>,
 }
 
-impl<T: Ord> Node<T> {
+impl<T: Ord + Display> Node<T> {
     fn new(value: Box<T>) -> Self {
         Node {
             value: Some(value),
@@ -37,16 +37,25 @@ impl<T: Ord> Node<T> {
             _ => {}
         }
     }
+
+    fn print(self: &Self) {
+        fn print_inner<T: Display + Ord>(node: &Node<T>, indention: usize) {
+            if node.left.as_ref().is_some() {
+                print_inner(node.left.as_ref().unwrap().as_ref(), indention + 1);
+            }
+            println!("{} {}", "  ".repeat(indention), node.value.as_ref().unwrap().as_ref());
+            if node.right.as_ref().is_some() {
+                print_inner(node.right.as_ref().unwrap().as_ref(), indention + 1);
+            }
+        }
+        print_inner(self, 0)
+    }
 }
 
 fn main() {
-    let mut tree = Node::new(Box::new(35));
-
-    tree.add(Box::new(33));
-    tree.add(Box::new(36));
-    tree.add(Box::new(15));
-    tree.add(Box::new(45));
-    tree.add(Box::new(1));
-
-    println!("{:?}", tree)
+    let mut tree = Node::new(Box::new(5));
+    for i in 0..10 {
+        tree.add(Box::new(i));
+    }
+    tree.print()
 }
